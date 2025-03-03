@@ -1,0 +1,14 @@
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\bin\Debug\net9.0\Tarea_Final_P2.exe
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\bin\Debug\net9.0\Tarea_Final_P2.deps.json
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\bin\Debug\net9.0\Tarea_Final_P2.runtimeconfig.json
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\bin\Debug\net9.0\Tarea_Final_P2.dll
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\bin\Debug\net9.0\Tarea_Final_P2.pdb
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\Tarea_Final_P2.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\Tarea_Final_P2.AssemblyInfoInputs.cache
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\Tarea_Final_P2.AssemblyInfo.cs
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\Tarea_Final_P2.csproj.CoreCompileInputs.cache
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\Tarea_Final_P2.dll
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\refint\Tarea_Final_P2.dll
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\Tarea_Final_P2.pdb
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\Tarea_Final_P2.genruntimeconfig.cache
+C:\Users\Keury\Desktop\Tarea Final P2 - Keury Ramirez\Tarea_Final_P2\obj\Debug\net9.0\ref\Tarea_Final_P2.dll

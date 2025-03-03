@@ -1,0 +1,152 @@
+"Eres un profesor experto en programación paralela en C#. Necesito que me generes un ejercicio práctico que cumpla con estos requisitos:
+
+Debe ser un problema del mundo real que requiera procesamiento paralelo
+El ejercicio debe obligatoriamente usar estos conceptos:
+Task.Run y Task.Factory.StartNew
+Tareas padre-hijo (TaskCreationOptions.AttachedToParent)
+ContinueWith con TaskContinuationOptions.OnlyOnRanToCompletion
+TaskContinuationOptions.OnlyOnCanceled para manejo de errores
+Task.WhenAny para coordinación de tareas
+Task.Delay para simular procesamiento
+Tu respuesta debe incluir:
+Descripción detallada del problema a resolver
+Lista de requisitos específicos
+Un ejemplo básico de la estructura esperada del código
+Criterios de evaluación
+Pistas o sugerencias para la implementación
+Retos adicionales opcionales para estudiantes avanzados
+Por favor, asegúrate que el ejercicio sea realizable en 2-3 horas y que tenga un nivel intermedio de dificultad."
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Descripción del Problema
+Imagina que debes desarrollar un sistema simplificado para procesar pedidos en un e-commerce. Cada pedido pasa por tres procesos principales:
+
+Verificación de Pago: Simula el procesamiento del pago del cliente.
+Actualización de Inventario: Se encarga de descontar los productos vendidos.
+Programación del Envío: Coordina el envío del pedido, donde se dividen subprocesos (por ejemplo, asignar un transportista y generar la etiqueta de envío).
+Cada uno de estos procesos se ejecutará en paralelo para optimizar el tiempo de respuesta. Además, se debe manejar de forma adecuada el flujo de éxito y el control de errores (por ejemplo, si ocurre algún fallo en la programación del envío, se debe cancelar el pedido).
+
+Requisitos Específicos
+Problema del mundo real: Simulación del procesamiento de pedidos en un e-commerce.
+Uso de Task.Run: Para iniciar tareas (por ejemplo, el proceso de verificación de pago).
+Uso de Task.Factory.StartNew: Para iniciar otras tareas (por ejemplo, la actualización del inventario).
+Tareas padre-hijo: En el proceso de envío, se deben crear tareas hijas adjuntas a la tarea padre (usando TaskCreationOptions.AttachedToParent).
+ContinueWith con TaskContinuationOptions.OnlyOnRanToCompletion: Para continuar el procesamiento cuando una tarea se complete exitosamente (por ejemplo, confirmar el envío).
+ContinueWith con TaskContinuationOptions.OnlyOnCanceled: Para manejar errores o cancelaciones en la cadena de tareas.
+Task.WhenAny: Para coordinar las tareas y, por ejemplo, disparar una acción cuando cualquiera de los procesos críticos termine.
+Task.Delay: Para simular el tiempo de procesamiento en cada una de las tareas.
+
+
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        ProcessOrder();
+        Console.ReadLine(); // Para mantener la consola abierta y observar la salida
+    }
+
+    static void ProcessOrder()
+    {
+        CancellationTokenSource cts = new CancellationTokenSource();
+
+        // 1. Proceso de verificación de pago usando Task.Run
+        var paymentTask = Task.Run(async () =>
+        {
+            Console.WriteLine("Procesando pago...");
+            await Task.Delay(1500); // Simula tiempo de procesamiento del pago
+            Console.WriteLine("Pago procesado exitosamente.");
+        }, cts.Token);
+
+        // 2. Actualización de inventario usando Task.Factory.StartNew
+        var inventoryTask = Task.Factory.StartNew(async () =>
+        {
+            Console.WriteLine("Actualizando inventario...");
+            await Task.Delay(2000); // Simula tiempo de actualización
+            Console.WriteLine("Inventario actualizado.");
+        }, cts.Token).Unwrap();
+
+        // 3. Programación de envío con tareas padre-hijo
+        var shipmentTask = Task.Factory.StartNew(() =>
+        {
+            Console.WriteLine("Iniciando programación de envío...");
+
+            // Tarea hija 1: Asignar transportista
+            Task childTask1 = Task.Factory.StartNew(async () =>
+            {
+                Console.WriteLine("Asignando transportista...");
+                await Task.Delay(1000);
+                Console.WriteLine("Transportista asignado.");
+            }, cts.Token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current).Unwrap();
+
+            // Tarea hija 2: Generar etiqueta de envío
+            Task childTask2 = Task.Factory.StartNew(async () =>
+            {
+                Console.WriteLine("Generando etiqueta de envío...");
+                await Task.Delay(1200);
+                Console.WriteLine("Etiqueta generada.");
+            }, cts.Token, TaskCreationOptions.AttachedToParent, TaskScheduler.Current).Unwrap();
+
+            // Espera a que ambas tareas hijas se completen
+            Task.WaitAll(childTask1, childTask2);
+            Console.WriteLine("Programación de envío completada.");
+        }, cts.Token);
+
+        // 4. Coordinación de tareas con Task.WhenAny
+        Task.WhenAny(paymentTask, inventoryTask, shipmentTask).ContinueWith(t =>
+        {
+            Console.WriteLine("Una de las tareas críticas ha finalizado, evaluando estado...");
+        });
+
+        // 5. Continuación en caso de éxito en la programación de envío
+        shipmentTask.ContinueWith(t =>
+        {
+            Console.WriteLine("Envío confirmado y listo para ser despachado.");
+        }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+        // 6. Manejo de errores en la programación de envío
+        shipmentTask.ContinueWith(t =>
+        {
+            Console.WriteLine("Error en la programación de envío, se cancelará el pedido.");
+            cts.Cancel();
+        }, TaskContinuationOptions.OnlyOnCanceled);
+
+        // Espera a que todas las tareas finalicen
+        Task.WaitAll(paymentTask, inventoryTask, shipmentTask);
+        Console.WriteLine("Procesamiento de pedido finalizado.");
+    }
+}
+
+
+
+Criterios de Evaluación
+Uso correcto de Task.Run y Task.Factory.StartNew: El ejercicio debe iniciar tareas usando ambos métodos.
+Implementación de tareas padre-hijo: Se deben crear tareas hijas adjuntas a una tarea padre (utilizando TaskCreationOptions.AttachedToParent).
+Continuaciones específicas: Uso de ContinueWith con las opciones OnlyOnRanToCompletion y OnlyOnCanceled para definir el flujo en función del éxito o fallo de las tareas.
+Coordinación con Task.WhenAny: Se debe demostrar la capacidad de reaccionar cuando cualquiera de las tareas críticas finalice.
+Simulación realista: Uso de Task.Delay para simular procesos de duración variable.
+Manejo de cancelación y excepciones: Se debe incluir el uso de un CancellationToken y la lógica necesaria para gestionar cancelaciones.
+
+Pistas y Sugerencias para la Implementación
+Observa el flujo de ejecución: Utiliza mensajes en consola (Console.WriteLine) en cada etapa para entender el orden y la concurrencia de las tareas.
+Manejo de errores: Puedes simular errores introduciendo condiciones que cancelen la tarea de envío y activar la rama de OnlyOnCanceled.
+Explora las opciones de TaskCreationOptions: Prueba diferentes configuraciones y observa cómo afecta la ejecución de las tareas hijas.
+Utiliza un CancellationToken: Esto te ayudará a manejar la cancelación de tareas en caso de error o cuando se decida interrumpir el procesamiento.
+
+Retos Adicionales (Opcionales) para Estudiantes Avanzados
+Procesamiento Concurrente de Múltiples Pedidos: Extender el ejercicio para que procese simultáneamente varios pedidos, coordinando cada uno de forma independiente.
+Integración con una Cola de Mensajes: Simular la llegada de pedidos utilizando una cola de mensajes y procesarlos en paralelo.
+Interfaz Gráfica o API Web: Crear una interfaz de usuario o un servicio web que permita iniciar el procesamiento de pedidos y visualizar el estado en tiempo real.
+Uso de Otras Técnicas de Sincronización: Investigar y aplicar semáforos, barreras u otros mecanismos de sincronización para coordinar procesos paralelos complejos.
+Implementar un Mecanismo de Reintento: En el caso de fallos en alguna tarea, implementar lógica para reintentar el proceso antes de cancelar definitivamente el pedido.
+
+Este ejercicio está diseñado para ser completado en un tiempo estimado de 2 a 3 horas y tiene un nivel intermedio de dificultad, ya que involucra conceptos reales de procesamiento paralelo, coordinación de tareas y manejo de errores en C#. ¡Éxito en la implementación!
